@@ -6,22 +6,29 @@ import {
   Box,
   Tooltip,
 } from "@wix/design-system";
-import "@wix/design-system/styles.global.css";
 import { useEffect, useState } from "react";
-import "@wix/design-system/styles.global.css";
 
-const Recommends = (appId: string = "b06f2ef6-a9af-43b9-ab7c-2749448a41e8") => {
-  const [apps, setApps] = useState([] as any);
+const Recommends = ({
+  appId = "b06f2ef6-a9af-43b9-ab7c-2749448a41e8",
+}: {
+  appId?: string;
+}) => {
+  const [apps, setApps] = useState<any[]>([]);
 
   useEffect(() => {
-    fetch(
-      `https://certifiedcode.wixsite.com/custom-dashboard/_functions/recommends/${appId}`
-    )
-      .then((response) => response.json())
-      .then((data) => {
-        setApps(data);
-      });
-  }, []);
+    const getData = async () => {
+      if (appId) {
+        await fetch(
+          `https://certifiedcode.wixsite.com/custom-dashboard/_functions/recommends/${appId}`
+        )
+          .then((response) => response.json())
+          .then((data) => {
+            setApps(data);
+          });
+      }
+    };
+    getData();
+  }, [appId]);
 
   return (
     <Card>
@@ -41,9 +48,9 @@ const Recommends = (appId: string = "b06f2ef6-a9af-43b9-ab7c-2749448a41e8") => {
         imageBackgroundColor={"#FFFFFF"}
         image={
           <Box borderRadius={"8px"} direction="horizontal" gap="SP2">
-            {apps.map((app: any) => {
+            {apps && appId.length > 0 && apps.map((app: any, index) => {
               return (
-                <Tooltip content={app.details.name}>
+                <Tooltip key={index} content={app.details.name}>
                   <Image
                     color="#FFFFFF"
                     width="60px"
